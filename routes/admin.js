@@ -24,8 +24,9 @@ module.exports = (mobinime) => {
     router.get('/', async (req, res) => {
         try {
             const cfg = await settingsCache.getAll()
-            const [s, xpList, newest] = await Promise.all([
-                store.stats(), store.allUserXp(), store.newestUsers(5)
+            const [s, xpList, newest, pStats, activity] = await Promise.all([
+                store.stats(), store.allUserXp(), store.newestUsers(5),
+                store.platformStats(), store.recentActivity(20)
             ])
             // Distribusi user per rank
             const dist = cfg.ranks.map((r, i) => {
@@ -37,7 +38,7 @@ module.exports = (mobinime) => {
                 const idx = cfg.ranks.findIndex(r => r.name === st.rank.name)
                 if (idx >= 0) dist[idx].count++
             }
-            res.render('admin/dashboard', { section: 'dashboard', s, dist, newest, ranks: cfg.ranks, flash: req.query.ok ? { ok: req.query.ok } : null })
+            res.render('admin/dashboard', { section: 'dashboard', s, dist, newest, ranks: cfg.ranks, pStats, activity, flash: req.query.ok ? { ok: req.query.ok } : null })
         } catch (e) {
             res.status(500).render('admin/denied', { admin: req.admin, section: 'dashboard', message: e.message })
         }
