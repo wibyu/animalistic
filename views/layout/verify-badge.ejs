@@ -1,0 +1,7 @@
+<% if (typeof badge !== 'undefined' && badge) { %>
+<svg class="verify-badge shrink-0" width="<%= typeof size !== 'undefined' && size ? size : 14 %>" height="<%= typeof size !== 'undefined' && size ? size : 14 %>" viewBox="0 0 24 24" role="img" aria-label="<%= badge.label %> terverifikasi" focusable="false">
+    <title><%= badge.label %> terverifikasi</title>
+    <path d="M12.00 0.80L14.28 3.50L17.60 2.30L18.22 5.78L21.70 6.40L20.50 9.72L23.20 12.00L20.50 14.28L21.70 17.60L18.22 18.22L17.60 21.70L14.28 20.50L12.00 23.20L9.72 20.50L6.40 21.70L5.78 18.22L2.30 17.60L3.50 14.28L0.80 12.00L3.50 9.72L2.30 6.40L5.78 5.78L6.40 2.30L9.72 3.50Z" fill="<%= badge.color %>"/>
+    <path d="M7.2 12.3l3 3 6.4-6.6" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<% } %>

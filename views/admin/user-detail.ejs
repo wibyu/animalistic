@@ -17,6 +17,7 @@
             <div class="flex-1 min-w-[200px]">
                 <h1 class="text-2xl font-black text-white flex items-center gap-3 flex-wrap">
                     <%= user.username %>
+                    <%- include('../layout/verify-badge', { badge, size: 20 }) %>
                     <span class="text-[10px] font-black px-2 py-0.5 rounded-full <%= user.role === 'owner' ? 'bg-yellow-500/15 text-yellow-300 border border-yellow-500/30' : (user.role === 'admin' ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30' : 'bg-zinc-500/15 text-zinc-400 border border-zinc-500/30') %>"><%= (user.role || 'user').toUpperCase() %></span>
                     <% if (user.is_banned) { %><span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30">BANNED</span><% } %>
                 </h1>
@@ -73,6 +74,27 @@
                             <option value="owner" <%= user.role === 'owner' ? 'selected' : '' %>>owner — staff penuh</option>
                         </select>
                         <button class="btn shrink-0">Ubah Role</button>
+                    </form>
+                </div>
+
+                <div class="border-t border-white/5 pt-4">
+                    <h2 class="font-bold text-white mb-1">Lencana Verifikasi</h2>
+                    <p class="text-[11px] text-zinc-500 mb-3">Seal + centang di samping username (navbar, komentar, chat, leaderboard). Bebas dipilih owner.</p>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <% badgeOptions.forEach(b => { %>
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-1 rounded-full border <%= badge && badge.key === b.key ? 'border-white/30 bg-white/10 text-white' : 'border-white/10 text-zinc-400' %>">
+                                <%- include('../layout/verify-badge', { badge: b, size: 12 }) %>
+                                <%= b.label %>
+                            </span>
+                        <% }) %>
+                    </div>
+                    <form method="POST" action="/admin/users/<%= user.id %>/badge" class="flex gap-2">
+                        <select name="badge" class="input">
+                            <% badgeOptions.forEach(b => { %>
+                                <option value="<%= b.key %>" <%= badge && badge.key === b.key ? 'selected' : '' %>><%= b.label %> — <%= b.desc %></option>
+                            <% }) %>
+                        </select>
+                        <button class="btn shrink-0">Simpan Lencana</button>
                     </form>
                 </div>
                 <% } %>

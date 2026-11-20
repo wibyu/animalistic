@@ -1,6 +1,6 @@
-# Dokumentasi Project WibuKon
+# Dokumentasi Project Animalistic
 
-WibuKon adalah platform web streaming anime modern yang dibangun menggunakan Node.js, Express, dan EJS untuk server-side rendering, dengan Tailwind CSS via CDN.
+Animalistic adalah platform web streaming anime modern yang dibangun menggunakan Node.js, Express, dan EJS untuk server-side rendering, dengan Tailwind CSS via CDN.
 
 ## Fitur
 
@@ -17,6 +17,8 @@ WibuKon adalah platform web streaming anime modern yang dibangun menggunakan Nod
 - **VIP Paket Sultan** (`/vip`): badge 💎 VIP + username gradasi emas animasi + bingkai avatar di komentar/chat/leaderboard, **EXP boost 2x** semua event, chat 3→1 dtk & 280→500 karakter, komentar 15→5 dtk & 500→1000 karakter, slot Lanjutkan Nonton 12→50 & bookmark 100→500. Cara dapat: **owner/admin aktifkan manual** (permanen/30 hari/cabut) ATAU **user ajukan donasi** → admin approve di `/admin/vip` (30 hari, menumpuk). Info donasi diedit dari `/admin/content`
 - **Panel Admin** (`/admin`) **satu pintu dengan akun user** (login password/Google) — 2 role: owner & admin: dashboard statistik, manajemen user (adjust EXP, ban, **ubah role** = cara mengangkat admin/owner baru), kontrol konten (pengumuman, anime unggulan, blacklist), konfigurasi rank/event
 - Login Google (OAuth 2.0) — auto buat/tautkan akun via `google_id`, avatar tampil di navbar & komentar
+- **Lencana verifikasi**: seal + centang di samping username (navbar, komentar, chat, leaderboard) — hijau owner, merah admin, kuning beta tester, ungu moderator, biru user biasa. Owner bebas mengganti lencana siapa pun di panel admin (users.badge).
+- **Server video tambahan**: AnimeInWeb (RAPSODI MP4 1080p/720p/480p/360p) lewat `/api/episode/:slug/sources`, tampil sebagai tombol server di halaman nonton.
 - Cache in-memory (`lib/cache.js`): home 5 menit, search 10 menit, detail 30 menit
 - Fallback gambar otomatis jika cover gagal dimuat
 
@@ -106,7 +108,7 @@ Buka http://localhost:3000
 PORT=3000
 
 # PostgreSQL — kosongkan untuk mode tanpa DB (fitur akun/admin nonaktif)
-DATABASE_URL=postgres://user:password@host:5432/wibukon
+DATABASE_URL=postgres://user:password@host:5432/animalistic
 
 # Bootstrap owner: user yang login dengan username/email ini otomatis
 # jadi OWNER (hanya jika situs belum punya owner sama sekali)

@@ -3,6 +3,7 @@ const express = require('express')
 const router = express.Router()
 const db = require('../lib/db')
 const store = require('../lib/store')
+const badges = require('../lib/badges')
 
 const PERIODS = {
     harian:  { label: 'Hari Ini',       days: 1 },
@@ -31,7 +32,7 @@ router.get('/', async (req, res) => {
         } else {
             rows = await store.topSince(sinceDay(period.days), TOP)
         }
-        rows = rows.map(r => ({ ...r, isVip: store.isVip(r) }))
+        rows = rows.map(r => ({ ...r, badge: badges.resolve(r), isVip: store.isVip(r) }))
 
         if (req.authUser) {
             const u = req.authUser

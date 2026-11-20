@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Animalistic">
+  <defs>
+    <linearGradient id="ag" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#ag)"/>
+  <g fill="#ffffff">
+    <ellipse cx="19" cy="24" rx="5.2" ry="6.8" transform="rotate(-20 19 24)"/>
+    <ellipse cx="28.5" cy="18.5" rx="5.2" ry="7.2"/>
+    <ellipse cx="38.5" cy="18.5" rx="5.2" ry="7.2"/>
+    <ellipse cx="48" cy="24" rx="5.2" ry="6.8" transform="rotate(20 48 24)"/>
+    <path d="M33.5 29.5c7.4 0 13 5.2 13 11.2 0 5-4.2 8.3-9.4 8.3-1.7 0-2.9-.5-3.6-.5s-1.9.5-3.6.5c-5.2 0-9.4-3.3-9.4-8.3 0-6 5.6-11.2 13-11.2z"/>
+  </g>
+  <path d="M31 37.2l7.4 4.6-7.4 4.6z" fill="url(#ag)"/>
+</svg>

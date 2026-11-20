@@ -1,5 +1,5 @@
 {
-  "name": "wibukon",
+  "name": "animalistic",
   "version": "1.0.0",
   "description": "Web streaming anime dengan Express dan Tailwind",
   "main": "index.js",

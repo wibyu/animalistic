@@ -1,6 +1,9 @@
 <nav class="hidden md:flex fixed top-0 w-full z-50 glass px-8 py-4 justify-between items-center transition-all duration-300">
     <div class="flex items-center gap-8">
-        <a href="/" class="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-500">WibuKon</a>
+        <a href="/" class="flex items-center gap-2 group">
+            <img src="/images/animalistic-logo.svg" alt="Animalistic" class="w-8 h-8 group-hover:scale-105 transition">
+            <span class="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-500">Animalistic</span>
+        </a>
         <div class="flex gap-6 text-sm font-medium text-zinc-400">
             <a href="/" class="hover:text-white transition <%= active === 'home' ? 'text-white' : '' %>">Beranda</a>
             <a href="/schedule" class="hover:text-white transition <%= active === 'schedule' ? 'text-white' : '' %>">Jadwal Rilis</a>
@@ -37,7 +40,7 @@
                 <% } else { %>
                     <span class="w-7 h-7 rounded-full bg-purple-600 flex items-center justify-center text-white text-xs font-black"><%= authUser.username.charAt(0).toUpperCase() %></span>
                 <% } %>
-                <span class="text-xs font-bold text-zinc-300 max-w-[90px] truncate flex items-center gap-1"><% if (authUser.role === 'owner') { %>👑<% } else if (authUser.role === 'admin') { %>🛡<% } %><% if (authUser.vip) { %>💎<% } %><%= authUser.username %></span>
+                <span class="text-xs font-bold text-zinc-300 max-w-[120px] truncate flex items-center gap-1"><% if (authUser.vip) { %>💎<% } %><%= authUser.username %><%- include('verify-badge', { badge: authUser.badge, size: 13 }) %></span>
             </a>
         <% } else { %>
             <a href="/login?next=/" class="text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-full transition">Masuk</a>
@@ -46,7 +49,10 @@
 </nav>
 
 <nav class="md:hidden fixed top-0 w-full z-50 glass px-4 py-3 flex justify-between items-center backdrop-blur-xl">
-    <a href="/" class="text-xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-500">WibuKon</a>
+    <a href="/" class="flex items-center gap-1.5">
+        <img src="/images/animalistic-logo.svg" alt="Animalistic" class="w-7 h-7">
+        <span class="text-xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-500">Animalistic</span>
+    </a>
     <div class="flex items-center gap-2">
         <a href="/search?q=" onclick="event.preventDefault(); openMobileSearch();" class="p-2 bg-zinc-800/50 rounded-full text-zinc-400 active:scale-95 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>

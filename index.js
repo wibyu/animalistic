@@ -33,7 +33,7 @@ app.use((req, res, next) => { res.locals.assetV = ASSET_V; next() })
 // Jalur DB penting di serverless: pastikan skema ada sebelum request
 // pertama yang menyentuh DB (memoized — hanya migrasi sekali per proses).
 app.use(async (req, res, next) => {
-    try { await migrate.ensureMigrated() } catch (e) { console.error('[WibuKon] migrasi gagal:', e.message) }
+    try { await migrate.ensureMigrated() } catch (e) { console.error('[Animalistic] migrasi gagal:', e.message) }
     next()
 })
 
@@ -57,8 +57,8 @@ setupRoutes(app, mobinime)
 
 if (require.main === module) {
     app.listen(port, () => {
-        console.log(`WibuKon running at http://localhost:${port}`)
-        if (!db.enabled()) console.log('[WibuKon] Mode tanpa database (DATABASE_URL kosong): fitur publik normal, akun/EXP/admin nonaktif.')
+        console.log(`Animalistic running at http://localhost:${port}`)
+        if (!db.enabled()) console.log('[Animalistic] Mode tanpa database (DATABASE_URL kosong): fitur publik normal, akun/EXP/admin nonaktif.')
     })
 }
 

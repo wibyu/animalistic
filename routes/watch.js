@@ -3,6 +3,8 @@ const router = express.Router()
 const db = require('../lib/db')
 const store = require('../lib/store')
 const levels = require('../lib/levels')
+const badges = require('../lib/badges')
+const animein = require('../lib/animein')
 const settingsCache = require('../lib/settingsCache')
 
 function rel(ts) {
@@ -54,13 +56,26 @@ module.exports = (mobinime) => {
                 settingsCache.getAll()
             ])
 
+            // Nomor episode (dari judul "Episode 4") untuk mencari server tambahan AnimeIn
+            const epsData = detailData.episodes.find(e => e.id === epsId)
+            const epsTitle = epsData ? epsData.title : `Episode ${epsId}`
+            const epsNumMatch = /(\d+)/.exec(epsTitle)
+            const epsNumber = epsNumMatch ? Number(epsNumMatch[1]) : null
+
             res.render('watch', {
                 url: streamUrl,
                 anime: detailData,
                 currentEps: epsId,
+                epsNumber,
+                extraSourcesEnabled: animein.enabled,
                 active: 'home',
                 // Badge level + VIP tiap komentator -> bisa pamer di kolom komentar
-                comments: comments.map(c => ({ ...c, rel: rel(c.created_at), lv: levels.stateFor(cfg.ranks, c.xp || 0), isVip: store.isVip(c) })),
+                comments: comments.map(c => ({
+                    ...c, rel: rel(c.created_at),
+                    lv: levels.stateFor(cfg.ranks, c.xp || 0),
+                    badge: badges.resolve(c),
+                    isVip: store.isVip(c)
+                })),
                 commentCount,
                 commentsEnabled: db.enabled(),
                 authLv: req.authUser ? levels.stateFor(cfg.ranks, req.authUser.xp || 0) : null,

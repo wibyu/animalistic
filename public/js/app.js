@@ -1,4 +1,4 @@
-// Penyimpanan lokal WibuKon: Lanjutkan Nonton & Bookmark.
+// Penyimpanan lokal Animalistic: Lanjutkan Nonton & Bookmark.
 // Semua data disimpan di localStorage browser — tanpa backend/database.
 window.WibuStore = (function () {
     var CONTINUE_KEY = 'wibukonContinue'
@@ -239,4 +239,61 @@ window.WibuStore = (function () {
         pushWatched: pushWatched,
         setVip: setVip
     }
+})()
+
+/* ================= Lencana verifikasi ================= */
+// Seal + centang; warna mengikuti lencana user (owner/admin/moderator/beta/user).
+// Dipakai chat (node dinamis) & halaman level (HTML string).
+window.WibuBadge = (function () {
+    var MAP = {
+        owner: { color: '#20E800', label: 'Owner' },
+        admin: { color: '#FF1717', label: 'Admin' },
+        beta: { color: '#FFD700', label: 'Beta Tester' },
+        moderator: { color: '#A800FF', label: 'Moderator' },
+        user: { color: '#2196F3', label: 'User' }
+    }
+    var SEAL = 'M12.00 0.80L14.28 3.50L17.60 2.30L18.22 5.78L21.70 6.40L20.50 9.72L23.20 12.00L20.50 14.28L21.70 17.60L18.22 18.22L17.60 21.70L14.28 20.50L12.00 23.20L9.72 20.50L6.40 21.70L5.78 18.22L2.30 17.60L3.50 14.28L0.80 12.00L3.50 9.72L2.30 6.40L5.78 5.78L6.40 2.30L9.72 3.50Z'
+    var CHECK = 'M7.2 12.3l3 3 6.4-6.6'
+    var NS = 'http://www.w3.org/2000/svg'
+
+    function spec(badge) {
+        if (!badge) return null
+        var key = typeof badge === 'string' ? badge : badge.key
+        return MAP[key] ? { key: key, color: MAP[key].color, label: MAP[key].label } : null
+    }
+
+    function el(badge, size) {
+        var b = spec(badge)
+        if (!b || typeof document === 'undefined') return null
+        var s = size || 14
+        var svg = document.createElementNS(NS, 'svg')
+        svg.setAttribute('viewBox', '0 0 24 24')
+        svg.setAttribute('width', s)
+        svg.setAttribute('height', s)
+        svg.setAttribute('class', 'verify-badge shrink-0')
+        svg.setAttribute('role', 'img')
+        svg.setAttribute('aria-label', b.label + ' terverifikasi')
+        var p = document.createElementNS(NS, 'path')
+        p.setAttribute('d', SEAL)
+        p.setAttribute('fill', b.color)
+        var k = document.createElementNS(NS, 'path')
+        k.setAttribute('d', CHECK)
+        k.setAttribute('fill', 'none')
+        k.setAttribute('stroke', '#fff')
+        k.setAttribute('stroke-width', '2.4')
+        k.setAttribute('stroke-linecap', 'round')
+        k.setAttribute('stroke-linejoin', 'round')
+        svg.appendChild(p)
+        svg.appendChild(k)
+        return svg
+    }
+
+    function html(badge, size) {
+        var b = spec(badge)
+        if (!b) return ''
+        var s = size || 14
+        return '<svg class="verify-badge shrink-0" width="' + s + '" height="' + s + '" viewBox="0 0 24 24" role="img" aria-label="' + b.label + ' terverifikasi"><path d="' + SEAL + '" fill="' + b.color + '"/><path d="' + CHECK + '" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    }
+
+    return { MAP: MAP, spec: spec, el: el, html: html }
 })()

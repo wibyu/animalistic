@@ -22,7 +22,10 @@
                     <% users.forEach(u => { %>
                         <tr class="<%= u.is_banned ? 'opacity-50' : '' %>">
                             <td class="text-zinc-500">#<%= u.id %></td>
-                            <td class="font-bold text-white"><%= u.username %></td>
+                            <td class="font-bold text-white">
+                                <span class="inline-flex items-center gap-1.5"><%= u.username %><%- include('../layout/verify-badge', { badge: u.badge, size: 13 }) %></span>
+                                <span class="block text-[10px] text-zinc-600 font-medium"><%= (u.role || 'user').toUpperCase() %></span>
+                            </td>
                             <td><span style="color:<%= u.st.rank.color %>"><%= u.st.rank.icon %> Lv.<%= u.st.level %> <%= u.st.rank.name %></span></td>
                             <td class="text-purple-400 font-bold"><%= u.xp.toLocaleString('id-ID') %></td>
                             <td>

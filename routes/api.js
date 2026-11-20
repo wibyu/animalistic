@@ -4,6 +4,8 @@ const router = express.Router()
 const db = require('../lib/db')
 const store = require('../lib/store')
 const levels = require('../lib/levels')
+const badges = require('../lib/badges')
+const animein = require('../lib/animein')
 const expService = require('../lib/expService')
 const settingsCache = require('../lib/settingsCache')
 
@@ -20,7 +22,11 @@ router.get('/level/state', async (req, res) => {
         const history = db.enabled() ? await store.recentXpEvents(u.id, 20) : []
         res.json({
             ...base,
-            user: { id: u.id, username: u.username, role: u.role || 'user', vip: store.isVip(u), vipUntil: u.vip_until || null },
+            user: {
+                id: u.id, username: u.username, role: u.role || 'user',
+                badge: badges.resolve(u),
+                vip: store.isVip(u), vipUntil: u.vip_until || null
+            },
             state, history
         })
     } catch (e) {
@@ -74,6 +80,30 @@ router.post('/watched', async (req, res) => {
         res.json({ ok: true })
     } catch (e) {
         res.status(500).json({ ok: false, reason: 'server_error' })
+    }
+})
+
+// GET /api/episode/:slug/sources — server video tambahan dari AnimeInWeb (RAPSODI MP4).
+//   - slug ain_<animeId>_ep_<epId>  -> sumber langsung episode AnimeIn
+//   - slug episode situs (mis. 123-episode-4) + ?title=<judul>&ep=<nomor>
+//     -> cari judul di katalog AnimeIn lalu ambil sumber episode tsb.
+router.get('/episode/:slug/sources', async (req, res) => {
+    if (!animein.enabled) return res.json({ ok: false, reason: 'disabled', sources: [] })
+    const slug = String(req.params.slug || '')
+    try {
+        let sources = []
+        if (animein.isSlug(slug)) {
+            sources = await animein.getEpisodeSources(slug)
+        } else {
+            const title = String(req.query.title || '').trim()
+            const ep = Number(req.query.ep)
+            if (title && Number.isInteger(ep) && ep > 0) {
+                sources = await animein.sourcesFor(title, ep)
+            }
+        }
+        res.json({ ok: true, sources })
+    } catch (e) {
+        res.json({ ok: false, reason: 'server_error', sources: [] })
     }
 })
 

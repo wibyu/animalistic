@@ -1,9 +1,10 @@
-// Panel admin WibuKon — SATU PINTU dengan akun user biasa.
+// Panel admin Animalistic — SATU PINTU dengan akun user biasa.
 // Masuk /admin wajib login akun (password/Google) ber-role admin/owner;
 // sebagian route (konfigurasi rank, ubah role user) khusus OWNER.
 const express = require('express')
 const store = require('../lib/store')
 const levels = require('../lib/levels')
+const badges = require('../lib/badges')
 const expService = require('../lib/expService')
 const settingsCache = require('../lib/settingsCache')
 const { requireAdmin, requireOwner } = require('../lib/authUtil')
@@ -50,7 +51,7 @@ module.exports = (mobinime) => {
             const per = 20
             const cfg = await settingsCache.getAll()
             const [rows, total] = await Promise.all([store.listUsers(q, per, (page - 1) * per), store.countUsers(q)])
-            const users = rows.map(u => ({ ...u, st: levels.stateFor(cfg.ranks, u.xp) }))
+            const users = rows.map(u => ({ ...u, st: levels.stateFor(cfg.ranks, u.xp), badge: badges.resolve(u) }))
             res.render('admin/users', { section: 'users', users, q, page, pages: Math.max(1, Math.ceil(total / per)), total, flash: null })
         } catch (e) {
             res.status(500).render('admin/denied', { admin: req.admin, section: 'users', message: e.message })
@@ -65,6 +66,8 @@ module.exports = (mobinime) => {
             const events = await store.recentXpEvents(user.id, 30)
             res.render('admin/user-detail', {
                 section: 'users', user, st: levels.stateFor(cfg.ranks, user.xp), events,
+                badge: badges.resolve(user),
+                badgeOptions: badges.KEYS.map(k => badges.BADGES[k]),
                 flash: req.query.ok ? { ok: req.query.ok } : (req.query.err ? { err: req.query.err } : null)
             })
         } catch (e) {
@@ -112,6 +115,22 @@ module.exports = (mobinime) => {
             res.redirect(`/admin/users/${user.id}?ok=` + encodeURIComponent(`Role ${user.username} -> ${role.toUpperCase()}`))
         } catch (e) {
             res.redirect(`/admin/users/${req.params.id}?err=` + encodeURIComponent('Gagal mengubah role'))
+        }
+    })
+
+    // Ganti LENCANA VERIFIKASI user — khusus OWNER, bebas pilih warna/status.
+    router.post('/users/:id/badge', requireOwner, async (req, res) => {
+        try {
+            const key = String(req.body.badge || '')
+            if (!badges.isBadge(key)) {
+                return res.redirect(`/admin/users/${req.params.id}?err=` + encodeURIComponent('Lencana tidak valid'))
+            }
+            const user = await store.findUserById(parseInt(req.params.id))
+            if (!user) return res.redirect('/admin/users')
+            await store.setUserBadge(user.id, key)
+            res.redirect(`/admin/users/${user.id}?ok=` + encodeURIComponent(`Lencana ${user.username} -> ${badges.BADGES[key].label}`))
+        } catch (e) {
+            res.redirect(`/admin/users/${req.params.id}?err=` + encodeURIComponent('Gagal mengubah lencana'))
         }
     })
 

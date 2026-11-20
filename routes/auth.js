@@ -198,7 +198,7 @@ router.get('/auth/google/callback', async (req, res) => {
         setSessionCookie(res, req, USER_COOKIE, s.token)
         res.redirect(nextUrl === '/' ? '/level' : nextUrl)
     } catch (e) {
-        console.error('[WibuKon] Google login error:', e.message)
+        console.error('[Animalistic] Google login error:', e.message)
         res.status(500).render('login', { active: '', next: '/', google: googleEnabled(), error: 'Login Google gagal, coba lagi.' })
     }
 })

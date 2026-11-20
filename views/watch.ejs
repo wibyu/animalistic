@@ -17,7 +17,7 @@
 
     <main class="flex-grow flex flex-col lg:flex-row lg:overflow-hidden">
         <article class="w-full lg:w-3/4 bg-black flex flex-col relative shrink-0 lg:overflow-y-auto custom-scroll">
-            <section class="relative w-full aspect-video bg-black shrink-0" aria-label="Video Player">
+            <section id="playerBox" class="relative w-full aspect-video bg-black shrink-0" aria-label="Video Player">
                 <% if (url) { %>
                     <iframe src="<%= url %>" class="absolute inset-0 w-full h-full" frameborder="0" allowfullscreen title="Video player for <%= anime.title %>"></iframe>
                 <% } else { %>
@@ -27,6 +27,18 @@
                     </div>
                 <% } %>
             </section>
+
+            <% if (typeof extraSourcesEnabled !== 'undefined' && extraSourcesEnabled) { %>
+            <section class="px-4 md:px-6 py-3 bg-[#0f0f12] border-b border-white/5" aria-label="Server tambahan">
+                <div class="flex items-center gap-2 mb-2 flex-wrap">
+                    <span class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-slate-400">Server Tambahan</span>
+                    <span class="text-[10px] text-slate-600">RAPSODI · MP4 langsung</span>
+                </div>
+                <div id="extraServerList" class="flex flex-wrap gap-2">
+                    <span class="text-[11px] text-slate-500">Memuat server…</span>
+                </div>
+            </section>
+            <% } %>
             
             <section class="p-4 md:p-6 bg-[#0f0f12] border-b border-white/5 lg:border-none" aria-label="Episode Information">
                 <div class="flex flex-wrap justify-between items-center gap-4 mb-3">
@@ -100,6 +112,7 @@
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2 flex-wrap">
                                         <span class="text-xs md:text-sm font-bold <%= c.isVip ? 'vip-name' : (c.role === 'owner' ? 'text-yellow-300' : (c.role === 'admin' ? 'text-purple-300' : 'text-zinc-200')) %>"><%= c.username %></span>
+                                        <%- include('layout/verify-badge', { badge: c.badge, size: 13 }) %>
                                         <% if (c.role === 'owner') { %><span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">👑 OWNER</span>
                                         <% } else if (c.role === 'admin') { %><span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40">🛡 ADMIN</span><% } %>
                                         <% if (c.isVip) { %><span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">💎 VIP</span><% } %>
@@ -198,5 +211,69 @@
             WibuStore.syncWatched(item.animeId, paintWatched)
         })()
     </script>
+
+    <% if (typeof extraSourcesEnabled !== 'undefined' && extraSourcesEnabled) { %>
+    <script>
+        // Server video tambahan (AnimeInWeb / RAPSODI MP4) — dimuat setelah halaman siap
+        // supaya pemutaran utama tidak tertahan bila sumber tambahan lambat.
+        (function () {
+            var list = document.getElementById('extraServerList')
+            var box = document.getElementById('playerBox')
+            if (!list || !box) return
+
+            var slug = <%- JSON.stringify(currentEpsData ? currentEpsData.slug : String(currentEps) + '-episode') %>;
+            var title = <%- JSON.stringify(anime.title).replace(/</g, '\\u003c') %>;
+            var ep = <%- JSON.stringify(typeof epsNumber !== 'undefined' && epsNumber ? epsNumber : null) %>;
+
+            function baseClass(on) {
+                return 'text-[11px] md:text-xs font-bold px-3 py-1.5 rounded-full border transition active:scale-95 ' +
+                    (on ? 'bg-purple-600 border-purple-500 text-white' : 'bg-white/[0.04] border-white/10 text-zinc-300 hover:bg-white/10')
+            }
+
+            function play(src, btn) {
+                box.innerHTML = ''
+                var v = document.createElement('video')
+                v.src = src
+                v.controls = true
+                v.autoplay = true
+                v.setAttribute('playsinline', '')
+                v.className = 'absolute inset-0 w-full h-full bg-black'
+                box.appendChild(v)
+                var p = v.play()
+                if (p && p.catch) p.catch(function () {})
+                list.querySelectorAll('button[data-server]').forEach(function (b) { b.className = baseClass(false) })
+                btn.className = baseClass(true)
+            }
+
+            if (!ep) {
+                list.innerHTML = '<span class="text-[11px] text-slate-600">Nomor episode tidak dikenali.</span>'
+                return
+            }
+
+            fetch('/api/episode/' + encodeURIComponent(slug) + '/sources?title=' + encodeURIComponent(title) + '&ep=' + ep)
+                .then(function (r) { return r.json() })
+                .then(function (d) {
+                    var sources = (d && d.ok && d.sources) ? d.sources : []
+                    if (!sources.length) {
+                        list.innerHTML = '<span class="text-[11px] text-slate-600">Tidak ada server tambahan untuk episode ini.</span>'
+                        return
+                    }
+                    list.innerHTML = ''
+                    sources.forEach(function (s) {
+                        var b = document.createElement('button')
+                        b.type = 'button'
+                        b.setAttribute('data-server', s.server || '')
+                        b.className = baseClass(false)
+                        b.textContent = (s.quality || 'MP4') + (s.type === 'hls' ? ' · HLS' : '') + ' · ' + (s.server || 'animein')
+                        b.addEventListener('click', function () { play(s.url, b) })
+                        list.appendChild(b)
+                    })
+                })
+                .catch(function () {
+                    list.innerHTML = '<span class="text-[11px] text-slate-600">Gagal memuat server tambahan.</span>'
+                })
+        })()
+    </script>
+    <% } %>
 </body>
 </html>

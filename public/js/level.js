@@ -1,4 +1,4 @@
-// Sistem Level & EXP WibuKon — v2.
+// Sistem Level & EXP Animalistic — v2.
 // Dua mode:
 //   - MODE SERVER  : user login -> EXP disimpan di PostgreSQL (anti-cheat di server),
 //                    sinkron di semua perangkat. Konfigurasi rank/event dari admin panel.

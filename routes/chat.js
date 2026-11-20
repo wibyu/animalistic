@@ -1,10 +1,11 @@
-// Chat global WibuKon — ruang ngobrol semua user (1 ruang untuk seluruh situs).
+// Chat global Animalistic — ruang ngobrol semua user (1 ruang untuk seluruh situs).
 // Baca: bebas (tamu boleh). Kirim: wajib login. Realtime via polling JSON tiap 4 dtk.
 const express = require('express')
 const router = express.Router()
 const db = require('../lib/db')
 const store = require('../lib/store')
 const levels = require('../lib/levels')
+const badges = require('../lib/badges')
 const settingsCache = require('../lib/settingsCache')
 
 // Limit chat per user — VIP (sementara/permanen) serba dilonggarkan
@@ -27,7 +28,13 @@ function rel(ts) {
 }
 
 function withLv(rows, ranks) {
-    return rows.map(m => ({ ...m, rel: rel(m.created_at), lv: levels.stateFor(ranks, m.xp || 0), isVip: store.isVip(m) }))
+    return rows.map(m => ({
+        ...m,
+        rel: rel(m.created_at),
+        lv: levels.stateFor(ranks, m.xp || 0),
+        badge: badges.resolve(m),
+        isVip: store.isVip(m)
+    }))
 }
 
 // Bentuk JSON aman untuk klien polling (tanpa field sensitif)
@@ -36,6 +43,7 @@ function toJson(m) {
         id: m.id, body: m.body, rel: m.rel,
         userId: m.user_id, username: m.username,
         avatar: m.avatar_url || null, role: m.role || 'user',
+        badge: m.badge || null,
         vip: store.isVip(m),
         lv: { level: m.lv.level, xp: m.lv.xp, name: m.lv.rank.name, icon: m.lv.rank.icon, color: m.lv.rank.color }
     }

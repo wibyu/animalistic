@@ -35,6 +35,7 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="text-xs md:text-sm font-bold <%= m.isVip ? 'vip-name' : ((typeof authUser !== 'undefined' && authUser && authUser.id === m.user_id) ? 'text-purple-300' : (m.role === 'owner' ? 'text-yellow-300' : (m.role === 'admin' ? 'text-purple-300' : 'text-zinc-200'))) %>"><%= m.username %></span>
+                            <%- include('layout/verify-badge', { badge: m.badge, size: 13 }) %>
                             <% if (m.role === 'owner') { %><span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">👑 OWNER</span>
                             <% } else if (m.role === 'admin') { %><span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40">🛡 ADMIN</span><% } %>
                             <% if (m.isVip) { %><span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">💎 VIP</span><% } %>
@@ -130,6 +131,9 @@
                 name.className = 'text-xs md:text-sm font-bold ' + (m.vip ? 'vip-name' : (ownMsg ? 'text-purple-300' : (m.role === 'owner' ? 'text-yellow-300' : (m.role === 'admin' ? 'text-purple-300' : 'text-zinc-200'))))
                 name.textContent = m.username
                 head.appendChild(name)
+
+                var vbadge = window.WibuBadge && WibuBadge.el(m.badge, 13)
+                if (vbadge) head.appendChild(vbadge)
 
                 if (m.role === 'owner' || m.role === 'admin') {
                     var rb = document.createElement('span')
